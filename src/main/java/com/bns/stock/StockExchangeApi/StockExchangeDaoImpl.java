@@ -46,9 +46,15 @@ public class StockExchangeDaoImpl implements StockExchangeDao {
 
     @Override
     public void addStockExchangeData(final StockExchangeVO stockExchangeVO, final String correlationId) {
+        EntityManager entityManager = new entityManagerFactory.createEntityManager();
         StockExchangeEntity stockentity = new StockExchangeEntity();
         BeanUtils.copyProperties(stockentity,stockExchangeVO);
-        stockExchangeRepository.save(stockentity);
+        entityManager.getTransaction().begin();
+        entityManager.persists(stockentity);
+        entityManager.getTransaction().commit();
+        //StockExchangeEntity stockentity = new StockExchangeEntity();
+        //BeanUtils.copyProperties(stockentity,stockExchangeVO);
+        //stockExchangeRepository.save(stockentity);
     }
 
 

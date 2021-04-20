@@ -11,8 +11,10 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public interface StockExchangeRepository extends CrudRepository<StockExchangeEntity, Long> {
+public interface StockExchangeRepository extends JpaRepository<StockExchangeEntity, String> { {
 
+    @Query(value="select * from stock_exchange stk where stk.stock_type like %?1", nativeQuery=true);
     List<StockExchangeEntity> findByStockType(String StockType);
+    //List<StockExchangeEntity> findByStockType(String StockType);
 }
 

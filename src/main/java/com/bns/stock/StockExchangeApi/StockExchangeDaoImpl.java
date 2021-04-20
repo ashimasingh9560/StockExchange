@@ -44,7 +44,7 @@ public class StockExchangeDaoImpl implements StockExchangeDao {
     @Override
     public void submitStockExchangeBulkData(final List<StockExchangeVO> stockExchangeVOList, final String correlationId) {
         log.info("calling submitStockExchangeBulkData",correlationId);
-        
+        try{
         EntityManager entityManager = new entityManagerFactory.createEntityManager();
 
         List<StockExchangeEntity> stockExchangeEntityList=convertToEntity(stockExchangeVOList);
@@ -53,7 +53,9 @@ public class StockExchangeDaoImpl implements StockExchangeDao {
             entityManager.persists(s);
         });
         entityManager.getTransaction().commit();
-        
+        }Catach(IOException e){
+            throw new RuntimeException(e);
+        }
         //List<StockExchangeEntity> stockExchangeEntityList=convertToEntity(stockExchangeVOList);
         //stockExchangeRepository.saveAll(stockExchangeEntityList);
     }
@@ -63,9 +65,14 @@ public class StockExchangeDaoImpl implements StockExchangeDao {
         EntityManager entityManager = new entityManagerFactory.createEntityManager();
         StockExchangeEntity stockentity = new StockExchangeEntity();
         BeanUtils.copyProperties(stockentity,stockExchangeVO);
+        
+        try{
         entityManager.getTransaction().begin();
         entityManager.persists(stockentity);
         entityManager.getTransaction().commit();
+        }catch(IOException e){
+            throw new RuntimeException(e);
+        }
         //StockExchangeEntity stockentity = new StockExchangeEntity();
         //BeanUtils.copyProperties(stockentity,stockExchangeVO);
         //stockExchangeRepository.save(stockentity);

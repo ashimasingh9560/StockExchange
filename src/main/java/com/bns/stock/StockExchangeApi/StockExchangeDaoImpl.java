@@ -4,6 +4,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.slf4j.Slf4j;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
@@ -20,7 +22,7 @@ import java.util.Map;
 
 
 
-
+@Slf4j
 @Component
 public class StockExchangeDaoImpl implements StockExchangeDao {
 
@@ -30,6 +32,7 @@ public class StockExchangeDaoImpl implements StockExchangeDao {
     @Override
     public List<LookupData> getReferenceDataByTickerId(final String TickerId) {
         List<StockExchangeEntity> referenceLookupEntities = stockExchangeRepository.findByStockType(TickerId);
+        log.info("Calling getRefernceDataByTickerId",TickerId);
         if(referenceLookupEntities == null) {
             return null;
         }
@@ -40,8 +43,19 @@ public class StockExchangeDaoImpl implements StockExchangeDao {
 
     @Override
     public void submitStockExchangeBulkData(final List<StockExchangeVO> stockExchangeVOList, final String correlationId) {
+        log.info("calling submitStockExchangeBulkData",correlationId);
+        
+        EntityManager entityManager = new entityManagerFactory.createEntityManager();
+
         List<StockExchangeEntity> stockExchangeEntityList=convertToEntity(stockExchangeVOList);
-        stockExchangeRepository.saveAll(stockExchangeEntityList);
+        entityManager.getTransaction().begin();
+        stockExchangeEntityList.stream().forEach(s->{
+            entityManager.persists(s);
+        });
+        entityManager.getTransaction().commit();
+        
+        //List<StockExchangeEntity> stockExchangeEntityList=convertToEntity(stockExchangeVOList);
+        //stockExchangeRepository.saveAll(stockExchangeEntityList);
     }
 
     @Override
